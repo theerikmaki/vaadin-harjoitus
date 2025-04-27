@@ -1,23 +1,71 @@
-# Vaadin Harjoitus README
+# Vaadin Chat Application
 
-- [ ] TODO Replace or update this README with instructions relevant to your application
+This is a simple chat application built using:
+- Java 23
+- Spring Boot
+- Vaadin Flow
+- MySQL 8
+- Docker & Docker Compose
 
-To start the application in development mode, import it into your IDE and run the `Application` class. 
-You can also start the application from the command line by running: 
+## Features
+
+- User authentication with hashed passwords.
+- Admin-only access to user, message, and chat room management.
+- Real-time message broadcasting using Vaadin Push.
+- Responsive frontend using Vaadin components.
+- Database persistence for users, chat rooms, and messages.
+- Full Docker support for application and database.
+
+## Default Admin Credentials
+
+| Username | Password            |
+|:---------|:--------------------|
+| Admin    | SuperSecretPassword  |
+
+**Admin** account is automatically created on first application startup if it does not already exist.
+
+## Requirements
+
+- Java 23+
+- Maven
+- Docker
+- Docker Compose
+
+## Running the Application
+
+1. Build and run the containers:
 
 ```bash
-./mvnw
+docker-compose up --build
 ```
 
-To build the application in production mode, run:
+This will:
+- Start MySQL database on port 3306
+- Build and start the Vaadin chat app on port 8080
 
+2. Access the application
+
+Open your browser and navigate to:
+```
+http://localhost:8080
+```
+
+## Notes
+
+- Database schema is updated automatically on startup (`spring.jpa.hibernate.ddl-auto=update`).
+
+- All frontend styles are located under `src/main/frontend/themes/default/styles.css`.
+
+- Real-time updates use Vaadin Push and a custom broadcaster.
+
+## Development Commands
+
+To rebuild only:
 ```bash
-./mvnw -Pproduction package
+docker-compose up --build app
 ```
 
-## Getting Started
-
-The [Getting Started](https://vaadin.com/docs/latest/getting-started) guide will quickly familiarize you with your new
-Vaadin Harjoitus implementation. You'll learn how to set up your development environment, understand the project 
-structure, and find resources to help you add muscles to your skeleton — transforming it into a fully-featured 
-application.
+To tear down:
+```bash
+docker-compose down
+```
