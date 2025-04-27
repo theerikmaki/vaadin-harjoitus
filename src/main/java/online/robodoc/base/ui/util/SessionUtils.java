@@ -14,7 +14,14 @@ public class SessionUtils {
 
     public static User getUser()
     {
-        return (User) VaadinSession.getCurrent().getAttribute(USER_SESSION_KEY);
+        VaadinSession session = VaadinSession.getCurrent();
+
+        if (session == null)
+        {
+            return null;
+        }
+
+        return (User) session.getAttribute(USER_SESSION_KEY);
     }
 
     public static boolean isLoggedIn()

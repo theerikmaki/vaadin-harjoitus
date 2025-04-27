@@ -2,12 +2,10 @@ package online.robodoc.base.ui.layout;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Nav;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinSession;
@@ -15,19 +13,25 @@ import online.robodoc.base.domain.ChatRoom;
 import online.robodoc.base.service.ChatRoomService;
 import online.robodoc.base.ui.util.SessionUtils;
 import online.robodoc.base.ui.view.AboutView;
+import online.robodoc.base.ui.view.ChatView;
 import online.robodoc.base.ui.view.ProfileView;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @Layout
 public class MainLayout extends AppLayout
 {
-
     private final ChatRoomService chatRoomService;
 
+    private final VerticalLayout navLayout = new VerticalLayout();
+
+    @Autowired
     public MainLayout(ChatRoomService chatRoomService)
     {
         this.chatRoomService = chatRoomService;
+
+        addToDrawer(navLayout);
 
         createHeader();
         createDrawer();
@@ -60,32 +64,77 @@ public class MainLayout extends AppLayout
 
     private void createDrawer()
     {
-        Nav nav = new Nav();
+        navLayout.removeAll();
 
-        RouterLink profileLink = new RouterLink("Profile", ProfileView.class);
-        RouterLink aboutLink = new RouterLink("About", AboutView.class);
+        navLayout.setPadding(true);
+        navLayout.setSpacing(true);
+        navLayout.setAlignItems(FlexComponent.Alignment.START);
 
-        nav.add(profileLink, aboutLink);
+        navLayout.add(new RouterLink("Profile", ProfileView.class));
+        navLayout.add(new RouterLink("About", AboutView.class));
 
-        if (SessionUtils.isLoggedIn())
+        Div roomsHeader = new Div();
+
+        roomsHeader.setText("Chat Rooms");
+        roomsHeader.getStyle()
+                .set("font-weight", "bold")
+                .set("margin-top", "1rem");
+
+        navLayout.add(roomsHeader);
+
+        try
         {
-            List<ChatRoom> rooms = chatRoomService.findAll();
-
-            for (ChatRoom room : rooms)
+            if (SessionUtils.isLoggedIn())
             {
-                RouterLink roomLink = new RouterLink();
-                roomLink.setText(room.getName());
-                roomLink.setRoute(online.robodoc.base.ui.view.ChatView.class);
-                roomLink.getElement().setAttribute("href", "chat/" + room.getId());
+                List<ChatRoom> rooms = chatRoomService.findAll();
 
-                nav.add(roomLink);
+                if (rooms != null && !rooms.isEmpty())
+                {
+                    for (ChatRoom room : rooms)
+                    {
+                        RouterLink roomLink = new RouterLink();
+
+                        roomLink.setText(room.getName());
+                        roomLink.getElement().setAttribute("href", "chat/" + room.getId());
+
+                        navLayout.add(roomLink);
+                    }
+                }
+                else
+                {
+                    Div noRooms = new Div();
+
+                    noRooms.setText("No chat rooms yet.");
+
+                    navLayout.add(noRooms);
+                }
+            }
+            else
+            {
+                Div notLoggedIn = new Div();
+
+                notLoggedIn.setText("Please log in to see rooms.");
+
+                navLayout.add(notLoggedIn);
             }
         }
+        catch (Exception ex)
+        {
+            Div error = new Div();
 
-        addToDrawer(nav);
+            error.setText("Error loading rooms.");
+
+            navLayout.add(error);
+        }
     }
 
-    private void createFooter() {
+    public void refreshDrawer()
+    {
+        createDrawer();
+    }
+
+    private void createFooter()
+    {
         Footer footer = new Footer();
         footer.add(new Span("© Erik Mäki 2025"));
         addToDrawer(footer);

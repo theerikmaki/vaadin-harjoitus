@@ -12,12 +12,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.VaadinSession;
+import online.robodoc.base.domain.ChatRoom;
 import online.robodoc.base.domain.User;
 import online.robodoc.base.service.ChatRoomService;
 import online.robodoc.base.service.UserService;
 import online.robodoc.base.ui.layout.MainLayout;
 import online.robodoc.base.ui.util.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Route(value = "login")
 @RouteAlias(value = "", layout = MainLayout.class)
@@ -73,16 +76,22 @@ public class LoginView extends VerticalLayout
             {
                 SessionUtils.setUser(user);
 
-                if (!chatRoomService.findAll().isEmpty())
+                getUI().ifPresent(ui ->
                 {
-                    Long firstRoomId = chatRoomService.findAll().get(0).getId();
+                    List<ChatRoom> rooms = chatRoomService.findAll();
+                    if (!rooms.isEmpty())
+                    {
+                        Long firstRoomId = rooms.getFirst().getId();
 
-                    getUI().ifPresent(ui -> ui.navigate("chat/" + firstRoomId));
-                }
-                else
-                {
-                    Notification.show("No chat rooms available.");
-                }
+                        ui.navigate("chat/" + firstRoomId);
+                    }
+                    else
+                    {
+                        Notification.show("No chat rooms available.");
+
+                        ui.navigate("chatrooms");
+                    }
+                });
 
             }
             else
