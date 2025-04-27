@@ -7,6 +7,8 @@ This is a simple chat application built using:
 - MySQL 8
 - Docker & Docker Compose
 
+---
+
 ## Features
 
 - User authentication with hashed passwords.
@@ -16,40 +18,57 @@ This is a simple chat application built using:
 - Database persistence for users, chat rooms, and messages.
 - Full Docker support for application and database.
 
+---
+
 ## Default Admin Credentials
 
 | Username | Password            |
 |:---------|:--------------------|
 | Admin    | SuperSecretPassword  |
 
-**Admin** account is automatically created on first application startup if it does not already exist.
+**Note:**  
+The Admin account is automatically created at first startup if not already present in the database.
+
+---
 
 ## Changing the Default Admin Password
 
 To change the default password:
 
-1. Open the project file:
-
+1. Open:
 ```
-src/main/java/online/robodoc/base/config/DatabaseInitializer.java
+src/main/java/online/robodoc/base/config/DataInitializer.java
 ```
 
-2. Locate the section that creates the Admin user.
+2. Edit the password setting:
 
-3. Modify the password field:
-
-```
+```java
 admin.setPassword(passwordEncoder.encode("NewSecurePasswordHere"));
 ```
 
-4. Save the file and rebuild the application:
+3. Save and rebuild:
 
 ```bash
 docker-compose down
 docker-compose up --build
 ```
 
->Note: Changing the password later requires manual update of the database or creating a user interface for password management.
+**Important:**  
+Changing an already-created Admin password requires manual database update or a future admin UI feature.
+
+---
+
+## Admin Panel Access
+
+Once logged in as Admin, you can:
+
+| Path            | Functionality                       |
+|:----------------|:-------------------------------------|
+| `/users`        | View, add, edit, delete users.        |
+| `/messages`     | View and delete all messages.         |
+| `/chatrooms`    | View, create, edit, delete chat rooms.|
+
+---
 
 ## Requirements
 
@@ -57,6 +76,8 @@ docker-compose up --build
 - Maven
 - Docker
 - Docker Compose
+
+---
 
 ## Running the Application
 
@@ -70,29 +91,39 @@ This will:
 - Start MySQL database on port 3306
 - Build and start the Vaadin chat app on port 8080
 
-2. Access the application
+2. Open your browser at:
 
-Open your browser and navigate to:
 ```
 http://localhost:8080
 ```
 
-## Notes
-
-- Database schema is updated automatically on startup (`spring.jpa.hibernate.ddl-auto=update`).
-
-- All frontend styles are located under `src/main/frontend/themes/default/styles.css`.
-
-- Real-time updates use Vaadin Push and a custom broadcaster.
+---
 
 ## Development Commands
 
-To rebuild only:
+- Rebuild application container only:
+
 ```bash
 docker-compose up --build app
 ```
 
-To tear down:
+- Stop and remove containers:
+
 ```bash
 docker-compose down
 ```
+
+---
+
+## Notes
+
+- Database schema auto-updates on startup (`spring.jpa.hibernate.ddl-auto=update`).
+- Frontend styles are in `src/main/frontend/themes/default/styles.css`.
+- Real-time updates handled with Vaadin Push and a custom broadcaster.
+- Database connection waits on startup for MySQL readiness.
+
+---
+
+# License
+
+This project is distributed under the MIT License.
