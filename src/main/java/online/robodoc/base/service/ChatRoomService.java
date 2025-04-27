@@ -6,6 +6,7 @@ import online.robodoc.base.repository.ChatRoomRepository;
 import online.robodoc.base.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,7 @@ public class ChatRoomService
     @Autowired
     private MessageRepository messageRepository;
 
+    @Transactional
     public void delete(ChatRoom chatRoom, User currentUser)
     {
         if (chatRoom.getCreator().getId().equals(currentUser.getId()) || currentUser.getisAdmin())
