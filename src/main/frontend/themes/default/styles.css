@@ -31,6 +31,16 @@ a:hover {
     color: var(--primary-text-color)
 }
 
+.app-header {
+    background-color: var(--surface-color);
+    color: var(--primary-text-color);
+    padding: var(--lumo-space-s);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--lumo-box-shadow-s);
+}
+
 /* === Layout Utilities === */
 .full-width { width: 100%; }
 .full-height { height: 100%; }
@@ -62,6 +72,8 @@ a:hover {
 }
 
 /* === Navigation Links and Buttons === */
+
+
 .nav-button,
 vaadin-app-layout vaadin-router-link a,
 .chat-room-link {
@@ -283,4 +295,25 @@ vaadin-password-field::part(reveal-button) {
 
 .profile-title{
     color: var(--primary-text-color)
+}
+
+.create-room-button {
+    background-color: #2e7d32;
+    color: white;
+    font-weight: bold;
+    margin-bottom: var(--lumo-space-s);
+}
+
+.create-room-button:hover {
+    background-color: #388e3c;
+}
+
+.delete-room-button {
+    background-color: #c62828;
+    color: white;
+    font-weight: bold;
+}
+
+.delete-room-button:hover {
+    background-color: #e53935;
 }

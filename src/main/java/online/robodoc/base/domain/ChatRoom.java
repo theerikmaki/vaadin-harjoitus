@@ -57,4 +57,14 @@ public class ChatRoom
     {
         this.creator = creator;
     }
+
+    public User getOwner()
+    {
+        return getCreator();
+    }
+
+    public void setOwner(User creator)
+    {
+        setCreator(creator);
+    }
 }
