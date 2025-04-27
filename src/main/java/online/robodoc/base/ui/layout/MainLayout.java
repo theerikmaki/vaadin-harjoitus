@@ -1,6 +1,5 @@
 package online.robodoc.base.ui.layout;
 
-
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Footer;
@@ -9,23 +8,27 @@ import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.component.page.Viewport;
 import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinSession;
-import online.robodoc.base.domain.User;
-import online.robodoc.base.ui.view.ChatView;
-import online.robodoc.base.ui.view.ProfileView;
+import online.robodoc.base.domain.ChatRoom;
+import online.robodoc.base.service.ChatRoomService;
+import online.robodoc.base.ui.util.SessionUtils;
 import online.robodoc.base.ui.view.AboutView;
-import online.robodoc.base.ui.view.LoginView;
+import online.robodoc.base.ui.view.ProfileView;
+
+import java.util.List;
 
 @Layout
 public class MainLayout extends AppLayout
 {
 
-    public MainLayout()
+    private final ChatRoomService chatRoomService;
+
+    public MainLayout(ChatRoomService chatRoomService)
     {
+        this.chatRoomService = chatRoomService;
+
         createHeader();
         createDrawer();
         createFooter();
@@ -59,16 +62,30 @@ public class MainLayout extends AppLayout
     {
         Nav nav = new Nav();
 
-        RouterLink chatLink = new RouterLink("Chat", ChatView.class);
         RouterLink profileLink = new RouterLink("Profile", ProfileView.class);
         RouterLink aboutLink = new RouterLink("About", AboutView.class);
 
-        nav.add(chatLink, profileLink, aboutLink);
+        nav.add(profileLink, aboutLink);
+
+        if (SessionUtils.isLoggedIn())
+        {
+            List<ChatRoom> rooms = chatRoomService.findAll();
+
+            for (ChatRoom room : rooms)
+            {
+                RouterLink roomLink = new RouterLink();
+                roomLink.setText(room.getName());
+                roomLink.setRoute(online.robodoc.base.ui.view.ChatView.class);
+                roomLink.getElement().setAttribute("href", "chat/" + room.getId());
+
+                nav.add(roomLink);
+            }
+        }
+
         addToDrawer(nav);
     }
 
-    private void createFooter()
-    {
+    private void createFooter() {
         Footer footer = new Footer();
         footer.add(new Span("© Erik Mäki 2025"));
         addToDrawer(footer);
