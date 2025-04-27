@@ -52,4 +52,9 @@ public class ChatRoom
     {
         this.description = description;
     }
+
+    public void setCreator(User creator)
+    {
+        this.creator = creator;
+    }
 }
