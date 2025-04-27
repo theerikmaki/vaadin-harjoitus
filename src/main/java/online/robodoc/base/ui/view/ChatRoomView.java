@@ -14,7 +14,8 @@ import online.robodoc.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("chatrooms")
-public class ChatRoomView extends VerticalLayout {
+public class ChatRoomView extends VerticalLayout
+{
 
     private final ChatRoomService chatRoomService;
 
