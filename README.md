@@ -24,6 +24,33 @@ This is a simple chat application built using:
 
 **Admin** account is automatically created on first application startup if it does not already exist.
 
+## Changing the Default Admin Password
+
+To change the default password:
+
+1. Open the project file:
+
+```
+src/main/java/online/robodoc/base/config/DatabaseInitializer.java
+```
+
+2. Locate the section that creates the Admin user.
+
+3. Modify the password field:
+
+```
+admin.setPassword(passwordEncoder.encode("NewSecurePasswordHere"));
+```
+
+4. Save the file and rebuild the application:
+
+```bash
+docker-compose down
+docker-compose up --build
+```
+
+>Note: Changing the password later requires manual update of the database or creating a user interface for password management.
+
 ## Requirements
 
 - Java 23+
