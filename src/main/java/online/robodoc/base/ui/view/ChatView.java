@@ -7,8 +7,10 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.*;
+import jakarta.annotation.PostConstruct;
 import online.robodoc.base.domain.ChatRoom;
 import online.robodoc.base.domain.Message;
 import online.robodoc.base.domain.User;
@@ -17,7 +19,10 @@ import online.robodoc.base.service.MessageService;
 import online.robodoc.base.service.UserService;
 import online.robodoc.base.ui.layout.MainLayout;
 import online.robodoc.base.ui.util.SessionUtils;
+import online.robodoc.base.util.Broadcaster;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.vaadin.flow.component.UI;
+
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -62,6 +67,18 @@ public class ChatView extends VerticalLayout implements BeforeEnterObserver
         }
 
         configureLayout();
+
+        Broadcaster.register(this);
+
+        addDetachListener(e -> Broadcaster.unregister(this));
+    }
+
+    public void reloadMessages()
+    {
+        if (currentRoom != null)
+        {
+            loadMessages();
+        }
     }
 
     private void configureLayout()
@@ -213,10 +230,10 @@ public class ChatView extends VerticalLayout implements BeforeEnterObserver
             messageService.save(message);
 
             messageField.clear();
-
-            loadMessages();
-
             messageField.focus();
+
+            loadMessages(); // own UI
+            Broadcaster.broadcast(); // tell others to reload
         }
     }
 

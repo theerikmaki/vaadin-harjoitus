@@ -9,6 +9,7 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.router.RouterLink;
@@ -21,6 +22,9 @@ import online.robodoc.base.ui.view.AboutView;
 import online.robodoc.base.ui.view.ChatView;
 import online.robodoc.base.ui.view.ProfileView;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.vaadin.flow.component.UI;
+
 
 import java.util.List;
 
@@ -221,7 +225,17 @@ public class MainLayout extends AppLayout
 
                 chatRoomService.save(newRoom);
 
-                refreshRooms();
+                chatRoomService.save(newRoom);
+
+                UI ui = UI.getCurrent();
+                if (ui != null) {
+                    ui.access(() -> {
+                        refreshRooms();
+                    });
+                }
+
+                dialog.close();
+
 
                 dialog.close();
             }
