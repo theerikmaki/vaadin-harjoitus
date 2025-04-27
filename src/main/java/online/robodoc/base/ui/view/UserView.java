@@ -7,15 +7,25 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import online.robodoc.base.domain.User;
 import online.robodoc.base.service.UserService;
+import online.robodoc.base.ui.util.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.checkbox.Checkbox;
 
 @Route("users")
-public class UserView extends VerticalLayout
+public class UserView extends VerticalLayout implements BeforeEnterObserver
 {
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        if (!SessionUtils.isLoggedIn() || !SessionUtils.getUser().getisAdmin()) {
+            event.forwardTo("login");
+        }
+    }
+
     private final UserService userService;
 
     private final Grid<User> grid = new Grid<>(User.class, false);

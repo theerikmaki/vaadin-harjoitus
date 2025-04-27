@@ -6,6 +6,8 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import online.robodoc.base.domain.ChatRoom;
 import online.robodoc.base.domain.Message;
@@ -13,6 +15,7 @@ import online.robodoc.base.domain.User;
 import online.robodoc.base.service.ChatRoomService;
 import online.robodoc.base.service.MessageService;
 import online.robodoc.base.service.UserService;
+import online.robodoc.base.ui.util.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -20,8 +23,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Route("messages")
-public class MessageView extends VerticalLayout
+public class MessageView extends VerticalLayout implements BeforeEnterObserver
 {
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        if (!SessionUtils.isLoggedIn() || !SessionUtils.getUser().getisAdmin()) {
+            event.forwardTo("login");
+        }
+    }
 
     private final MessageService messageService;
 
