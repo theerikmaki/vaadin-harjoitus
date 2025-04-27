@@ -17,7 +17,6 @@ import online.robodoc.base.service.UserService;
 import online.robodoc.base.ui.layout.MainLayout;
 import online.robodoc.base.ui.util.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Route(value = "login")

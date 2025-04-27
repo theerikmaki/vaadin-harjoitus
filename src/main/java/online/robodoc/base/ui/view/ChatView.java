@@ -7,10 +7,8 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.*;
-import jakarta.annotation.PostConstruct;
 import online.robodoc.base.domain.ChatRoom;
 import online.robodoc.base.domain.Message;
 import online.robodoc.base.domain.User;
@@ -21,7 +19,6 @@ import online.robodoc.base.ui.layout.MainLayout;
 import online.robodoc.base.ui.util.SessionUtils;
 import online.robodoc.base.util.Broadcaster;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.vaadin.flow.component.UI;
 
 
 import java.time.Duration;

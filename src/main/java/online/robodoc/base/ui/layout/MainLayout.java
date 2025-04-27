@@ -9,17 +9,14 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.server.VaadinSession;
 import online.robodoc.base.domain.ChatRoom;
 import online.robodoc.base.domain.User;
 import online.robodoc.base.service.ChatRoomService;
 import online.robodoc.base.ui.util.SessionUtils;
 import online.robodoc.base.ui.view.AboutView;
-import online.robodoc.base.ui.view.ChatView;
 import online.robodoc.base.ui.view.ProfileView;
 import org.springframework.beans.factory.annotation.Autowired;
 
