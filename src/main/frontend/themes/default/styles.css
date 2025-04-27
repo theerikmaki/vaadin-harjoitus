@@ -1,0 +1,286 @@
+/* === Global Variables === */
+:root {
+    --base-bg-color: #121212;
+    --surface-color: #1E1E1E;
+    --primary-text-color: #ffffff;
+    --secondary-text-color: #bbbbbb;
+    --highlight-color: #2e7d32;
+    --link-color: #58a6ff;
+    --link-hover-color: #80c8ff;
+    --button-bg: #222;
+    --button-hover-bg: #333;
+}
+
+/* === Base === */
+body, html {
+    background-color: var(--base-bg-color);
+    color: var(--primary-text-color);
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--link-hover-color);
+    text-decoration: underline;
+}
+
+.app-logo{
+    color: var(--primary-text-color)
+}
+
+/* === Layout Utilities === */
+.full-width { width: 100%; }
+.full-height { height: 100%; }
+.centered { display: flex; align-items: center; justify-content: center; }
+.vertical-spacing { display: flex; flex-direction: column; gap: var(--lumo-space-m); }
+.hidden { display: none; }
+.text-small { font-size: var(--lumo-font-size-s); }
+.text-muted { color: var(--secondary-text-color); }
+
+/* === Sidebar === */
+.sidebar-layout {
+    background-color: var(--surface-color);
+    padding: var(--lumo-space-m);
+    min-height: 100vh;
+}
+
+.sidebar-title {
+    font-size: var(--lumo-font-size-m);
+    font-weight: bold;
+    margin-top: var(--lumo-space-m);
+    margin-bottom: var(--lumo-space-s);
+    color: var(--primary-text-color);
+}
+
+.sidebar-text-muted {
+    font-size: var(--lumo-font-size-s);
+    color: var(--secondary-text-color);
+    margin-top: var(--lumo-space-s);
+}
+
+/* === Navigation Links and Buttons === */
+.nav-button,
+vaadin-app-layout vaadin-router-link a,
+.chat-room-link {
+    display: block;
+    padding: 10px 16px;
+    margin: 6px 0;
+    background-color: var(--button-bg);
+    color: var(--link-color);
+    text-decoration: none;
+    border: 1px solid #333;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.nav-button:hover,
+vaadin-app-layout vaadin-router-link a:hover,
+.chat-room-link:hover {
+    background-color: var(--button-hover-bg);
+    color: var(--link-hover-color);
+    border-color: #555;
+}
+
+.nav-button:active,
+vaadin-app-layout vaadin-router-link a:active,
+.chat-room-link:active {
+    background-color: #111;
+    border-color: #666;
+}
+
+/* === Chat View === */
+.chat-view {
+    background-color: var(--base-bg-color);
+    padding: var(--lumo-space-m);
+}
+
+.message-list,
+.message-scroller {
+    background-color: var(--surface-color);
+    border-radius: var(--lumo-border-radius-l);
+    padding: var(--lumo-space-m);
+    overflow-y: auto;
+}
+
+.input-layout {
+    background-color: var(--surface-color);
+    padding: var(--lumo-space-m);
+    border-top: 1px solid #333;
+}
+
+.message-field {
+    background-color: #1a1a1a;
+    color: var(--primary-text-color);
+    border: 1px solid #333;
+    border-radius: var(--lumo-border-radius-m);
+    resize: none;
+}
+
+.chat-nickname {
+    font-weight: bold;
+    margin-right: var(--lumo-space-s);
+    color: var(--primary-text-color);
+}
+
+.chat-nickname-self {
+    text-decoration: underline;
+    color: var(--highlight-color);
+}
+
+.chat-timestamp {
+    font-size: var(--lumo-font-size-s);
+    color: var(--secondary-text-color);
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.chat-message-content {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    padding: var(--lumo-space-xs);
+    border-radius: var(--lumo-border-radius-s);
+    background-color: var(--surface-color);
+    color: var(--primary-text-color);
+}
+
+/* === App Layout Customization === */
+vaadin-app-layout::part(drawer) {
+    background-color: #111;
+    color: #ddd;
+}
+
+.nav-layout {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: var(--lumo-space-s);
+}
+
+.rooms-layout {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: var(--lumo-space-xs);
+}
+
+.chat-rooms-header {
+    font-weight: bold;
+    margin-top: var(--lumo-space-m);
+    margin-bottom: var(--lumo-space-s);
+    color: #ccc;
+}
+
+/* === Header === */
+.header-layout {
+    background-color: var(--surface-color);
+    padding: var(--lumo-space-s);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo {
+    font-size: var(--lumo-font-size-xl);
+    font-weight: bold;
+    color: var(--primary-text-color);
+}
+
+/* === Footer === */
+.footer-layout {
+    margin-top: auto;
+    font-size: var(--lumo-font-size-xs);
+    color: var(--secondary-text-color);
+}
+
+/* === Login View === */
+.login-view {
+    background-color: var(--base-bg-color);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--lumo-space-m);
+    padding: var(--lumo-space-l);
+    border: 1px solid #333;
+    border-radius: var(--lumo-border-radius-l);
+    background-color: var(--surface-color);
+    width: 350px;
+}
+
+.login-title {
+    color: var(--primary-text-color);
+    margin-bottom: var(--lumo-space-m);
+}
+
+.login-input {
+    width: 100%;
+    background-color: #2a2a2a; /* lighter than background */
+    color: var(--primary-text-color);
+    border: 1px solid #555; /* lighter border */
+    border-radius: var(--lumo-border-radius-m);
+}
+
+.login-input::placeholder {
+    color: var(--secondary-text-color);
+}
+
+.login-button {
+    width: 100%;
+    background-color: var(--highlight-color);
+    color: white;
+    font-weight: bold;
+    border-radius: var(--lumo-border-radius-m);
+}
+
+vaadin-text-field label,
+vaadin-password-field label {
+    color: var(--primary-text-color);
+}
+
+vaadin-password-field::part(reveal-button) {
+    color: var(--secondary-text-color);
+}
+
+/* === About View === */
+.about-view {
+    padding: var(--lumo-space-l);
+    max-width: 800px;
+    margin: auto;
+}
+
+.about-title {
+    color: var(--primary-text-color);
+    font-size: var(--lumo-font-size-xxl);
+    margin-bottom: var(--lumo-space-m);
+}
+
+.about-description {
+    color: var(--secondary-text-color);
+    font-size: var(--lumo-font-size-m);
+    line-height: 1.5;
+}
+
+/* === Special Buttons === */
+.primary-button,
+.logout-button {
+    background-color: var(--highlight-color);
+    color: white;
+    font-weight: bold;
+    border-radius: var(--lumo-border-radius-m);
+}
+
+.primary-button:hover,
+.logout-button:hover {
+    background-color: #388e3c;
+}
+
+.profile-title{
+    color: var(--primary-text-color)
+}

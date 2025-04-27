@@ -1,35 +1,31 @@
 package online.robodoc.base.ui.view;
 
-import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import online.robodoc.base.ui.layout.MainLayout;
-import online.robodoc.base.ui.util.SessionUtils;
 
-@Route(value = "about", layout = MainLayout.class)
-@PageTitle("About")
+@Route(value = "about", layout = online.robodoc.base.ui.layout.MainLayout.class)
+@PageTitle("About | Chatty Chat")
 public class AboutView extends VerticalLayout
 {
 
     public AboutView()
     {
-        if (!SessionUtils.isLoggedIn())
-        {
-            getUI().ifPresent(ui -> ui.navigate(""));
+        addClassName("about-view");
 
-            return;
-        }
+        H1 title = new H1("About Chatty Chat");
 
-        H2 title = new H2("About This Application");
+        title.addClassName("about-title");
 
         Paragraph description = new Paragraph(
-                "A simplistic chat application made as a course project"
+                "Chatty Chat is barebones and simple chat application made as a course project"
         );
 
-        add(title, description);
+        description.addClassName("about-description");
 
-        setAlignItems(Alignment.CENTER);
+        add(title, description);
     }
 }

@@ -2,6 +2,7 @@ package online.robodoc.base.ui.layout;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Layout
+@CssImport("./themes/default/styles.css")
 public class MainLayout extends AppLayout
 {
     private final ChatRoomService chatRoomService;
@@ -40,51 +42,74 @@ public class MainLayout extends AppLayout
 
     private void createHeader()
     {
-        H1 title = new H1("Chatty Chat");
+        H2 logo = new H2("Chatty Chat");
 
-        title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
+        logo.addClassName("app-logo");
 
-        Button logoutButton = new Button("Logout", e ->
+        Button logoutButton = new Button("Logout", event ->
         {
-            VaadinSession.getCurrent().getSession().invalidate();
-            VaadinSession.getCurrent().close();
+            SessionUtils.setUser(null);
 
-            getUI().ifPresent(ui -> ui.navigate(""));
+            getUI().ifPresent(ui -> ui.navigate("login"));
         });
 
-        HorizontalLayout header = new HorizontalLayout(title, logoutButton);
+        logoutButton.addClassName("logout-button");
+
+        HorizontalLayout header = new HorizontalLayout(logo, logoutButton);
 
         header.setWidthFull();
-        header.expand(title);
-        header.setPadding(true);
-        header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+
+        header.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+
+        header.addClassName("app-header");
 
         addToNavbar(header);
     }
 
+    private VerticalLayout roomsLayout;
+
     private void createDrawer()
     {
-        navLayout.removeAll();
+        navLayout.setPadding(false);
+        navLayout.setSpacing(false);
+        navLayout.setWidthFull();
+        navLayout.addClassName("nav-layout"); // <- correct holy class
 
-        navLayout.setPadding(true);
-        navLayout.setSpacing(true);
-        navLayout.setAlignItems(FlexComponent.Alignment.START);
+        RouterLink profileLink = new RouterLink("Profile", ProfileView.class);
+        RouterLink aboutLink = new RouterLink("About", AboutView.class);
 
-        navLayout.add(new RouterLink("Profile", ProfileView.class));
-        navLayout.add(new RouterLink("About", AboutView.class));
+        profileLink.addClassName("nav-button");
+
+        aboutLink.addClassName("nav-button");
 
         Div roomsHeader = new Div();
 
         roomsHeader.setText("Chat Rooms");
-        roomsHeader.getStyle()
-                .set("font-weight", "bold")
-                .set("margin-top", "1rem");
+        roomsHeader.addClassName("chat-rooms-header");
 
-        navLayout.add(roomsHeader);
+        roomsLayout = new VerticalLayout();
+        roomsLayout.setPadding(false);
+        roomsLayout.setSpacing(false);
+        roomsLayout.setWidthFull();
+        roomsLayout.addClassName("rooms-layout");
 
-        try
+        navLayout.add(profileLink, aboutLink, roomsHeader, roomsLayout);
+
+        refreshRooms();
+
+        addToDrawer(navLayout);
+    }
+
+
+    public void refreshRooms()
+    {
+        roomsLayout.removeAll();
+
+        if (SessionUtils.isLoggedIn())
         {
-            if (SessionUtils.isLoggedIn())
+            try
             {
                 List<ChatRoom> rooms = chatRoomService.findAll();
 
@@ -92,12 +117,11 @@ public class MainLayout extends AppLayout
                 {
                     for (ChatRoom room : rooms)
                     {
-                        RouterLink roomLink = new RouterLink();
+                        Anchor roomLink = new Anchor("chat/" + room.getId(), room.getName());
 
-                        roomLink.setText(room.getName());
-                        roomLink.getElement().setAttribute("href", "chat/" + room.getId());
+                        roomLink.addClassName("chat-room-link");
 
-                        navLayout.add(roomLink);
+                        roomsLayout.add(roomLink);
                     }
                 }
                 else
@@ -106,31 +130,26 @@ public class MainLayout extends AppLayout
 
                     noRooms.setText("No chat rooms yet.");
 
-                    navLayout.add(noRooms);
+                    roomsLayout.add(noRooms);
                 }
             }
-            else
+            catch (Exception e)
             {
-                Div notLoggedIn = new Div();
+                Div error = new Div();
 
-                notLoggedIn.setText("Please log in to see rooms.");
+                error.setText("Error loading rooms.");
 
-                navLayout.add(notLoggedIn);
+                roomsLayout.add(error);
             }
         }
-        catch (Exception ex)
+        else
         {
-            Div error = new Div();
+            Div pleaseLogin = new Div();
 
-            error.setText("Error loading rooms.");
+            pleaseLogin.setText("Please log in to see rooms.");
 
-            navLayout.add(error);
+            roomsLayout.add(pleaseLogin);
         }
-    }
-
-    public void refreshDrawer()
-    {
-        createDrawer();
     }
 
     private void createFooter()

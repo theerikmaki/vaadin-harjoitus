@@ -7,7 +7,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.*;
 import online.robodoc.base.domain.ChatRoom;
 import online.robodoc.base.domain.Message;
@@ -18,9 +18,6 @@ import online.robodoc.base.service.UserService;
 import online.robodoc.base.ui.layout.MainLayout;
 import online.robodoc.base.ui.util.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.KeyPressEvent;
-
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -33,12 +30,17 @@ import java.util.Optional;
 public class ChatView extends VerticalLayout implements BeforeEnterObserver
 {
     private final MessageService messageService;
+
     private final UserService userService;
+
     private final ChatRoomService chatRoomService;
 
     private final VerticalLayout messageList = new VerticalLayout();
+
     private final Scroller messageScroller = new Scroller(messageList);
-    private final TextField messageField = new TextField();
+
+    private final TextArea messageField = new TextArea();
+
     private final Button sendButton = new Button("Send");
 
     private ChatRoom currentRoom;
@@ -47,12 +49,15 @@ public class ChatView extends VerticalLayout implements BeforeEnterObserver
     public ChatView(MessageService messageService, UserService userService, ChatRoomService chatRoomService)
     {
         this.messageService = messageService;
+
         this.userService = userService;
+
         this.chatRoomService = chatRoomService;
 
         if (!SessionUtils.isLoggedIn())
         {
-            getUI().ifPresent(ui -> ui.navigate(""));
+            getUI().ifPresent(ui -> ui.navigate("login"));
+
             return;
         }
 
@@ -61,38 +66,37 @@ public class ChatView extends VerticalLayout implements BeforeEnterObserver
 
     private void configureLayout()
     {
+        addClassName("chat-view");
+
         setSizeFull();
 
         setPadding(false);
+
         setSpacing(false);
 
         messageList.setWidthFull();
-        messageList.setPadding(false);
+        messageList.setPadding(true);
         messageList.setSpacing(false);
-        messageList.getStyle()
-                .set("gap", "0px")
-                .set("padding", "0px")
-                .set("margin", "0px");
-
+        messageList.addClassName("message-list");
 
         messageScroller.setSizeFull();
+        messageScroller.addClassName("message-scroller");
 
         messageField.setPlaceholder("Type a message...");
         messageField.setWidthFull();
+        messageField.addClassName("message-field");
 
-        messageField.addKeyPressListener(Key.ENTER, event -> {
-            if (!event.getKey().getKeys().contains("Shift")) {
-                sendButton.click();
-            }
-        });
-
-        sendButton.addClickListener(e -> sendMessage());
+        sendButton.setText("Send");
+        sendButton.addClassName("primary-button");
 
         HorizontalLayout inputLayout = new HorizontalLayout(messageField, sendButton);
 
         inputLayout.setWidthFull();
         inputLayout.setPadding(true);
         inputLayout.setAlignItems(FlexComponent.Alignment.END);
+        inputLayout.addClassName("input-layout");
+
+        sendButton.addClickListener(e -> sendMessage());
 
         add(messageScroller, inputLayout);
 
@@ -106,7 +110,6 @@ public class ChatView extends VerticalLayout implements BeforeEnterObserver
         if (currentRoom == null)
         {
             messageList.add(new Paragraph("Chat room not found."));
-
             return;
         }
 
@@ -120,7 +123,55 @@ public class ChatView extends VerticalLayout implements BeforeEnterObserver
         messageScroller.getElement().executeJs("this.scrollTop = this.scrollHeight;");
     }
 
-    private String formatTimestamp(LocalDateTime timestamp) {
+    private HorizontalLayout createMessageBubble(Message message)
+    {
+        HorizontalLayout bubble = new HorizontalLayout();
+
+        bubble.setWidthFull();
+        bubble.setPadding(false);
+        bubble.setSpacing(true);
+        bubble.setAlignItems(FlexComponent.Alignment.CENTER);
+        bubble.setJustifyContentMode(JustifyContentMode.BETWEEN);
+
+        User currentUser = SessionUtils.getUser();
+
+        boolean isOwnMessage = currentUser != null && message.getSender() != null &&
+                currentUser.getId().equals(message.getSender().getId());
+
+        HorizontalLayout leftSide = new HorizontalLayout();
+
+        leftSide.setAlignItems(FlexComponent.Alignment.BASELINE);
+        leftSide.setSpacing(true);
+
+        Div nickname = new Div();
+
+        nickname.setText(message.getSender() != null ? message.getSender().getUsername() : "Unknown");
+        nickname.addClassName("chat-nickname");
+
+        if (isOwnMessage)
+        {
+            nickname.addClassName("chat-nickname-self");
+        }
+
+        Div messageContent = new Div();
+
+        messageContent.setText(message.getContent() != null ? message.getContent() : "");
+        messageContent.addClassName("chat-message-content");
+
+        leftSide.add(nickname, messageContent);
+
+        Div timestamp = new Div();
+
+        timestamp.setText(formatTimestamp(message.getTimestamp()));
+        timestamp.addClassName("chat-timestamp");
+
+        bubble.add(leftSide, timestamp);
+
+        return bubble;
+    }
+
+    private String formatTimestamp(LocalDateTime timestamp)
+    {
         LocalDateTime now = LocalDateTime.now();
 
         Duration duration = Duration.between(timestamp, now);
@@ -140,59 +191,9 @@ public class ChatView extends VerticalLayout implements BeforeEnterObserver
         else
         {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
             return timestamp.format(dateFormatter);
         }
-    }
-
-
-    private HorizontalLayout createMessageBubble(Message message) {
-        HorizontalLayout bubble = new HorizontalLayout();
-
-        bubble.setWidthFull();
-        bubble.setPadding(false);
-        bubble.setSpacing(true);
-        bubble.getStyle()
-                .set("background-color", "#f3f4f6")
-                .set("border-radius", "var(--lumo-border-radius-s)")
-                .set("padding", "var(--lumo-space-xs)")
-                .set("margin", "0")
-                .set("margin-bottom", "2px")
-                .set("align-items", "baseline");
-
-        String senderName = message.getSender() != null ? message.getSender().getUsername() : "Unknown";
-
-        String content = message.getContent() != null ? message.getContent() : "";
-
-        String timeText = message.getTimestamp() != null ? formatTimestamp(message.getTimestamp()) : "";
-
-        Div nickname = new Div();
-
-        nickname.setText(senderName);
-
-        nickname.getStyle().set("font-weight", "bold").set("margin-right", "var(--lumo-space-s)");
-
-        Div messageContent = new Div();
-
-        messageContent.setText(content);
-
-        messageContent.getStyle()
-                .set("flex-grow", "1")
-                .set("white-space", "pre-wrap")
-                .set("word-break", "break-word")
-                .set("overflow-wrap", "break-word");
-
-        Div timestamp = new Div();
-
-        timestamp.setText(timeText);
-
-        timestamp.getStyle()
-                .set("font-size", "var(--lumo-font-size-xs)")
-                .set("color", "gray")
-                .set("margin-left", "auto"); // push it to the far right
-
-        bubble.add(nickname, messageContent, timestamp);
-
-        return bubble;
     }
 
     private void sendMessage()
@@ -204,7 +205,6 @@ public class ChatView extends VerticalLayout implements BeforeEnterObserver
         if (content != null && !content.trim().isEmpty() && sender != null && currentRoom != null)
         {
             Message message = new Message();
-
             message.setSender(sender);
             message.setChatRoom(currentRoom);
             message.setContent(content);
@@ -215,6 +215,8 @@ public class ChatView extends VerticalLayout implements BeforeEnterObserver
             messageField.clear();
 
             loadMessages();
+
+            messageField.focus();
         }
     }
 
