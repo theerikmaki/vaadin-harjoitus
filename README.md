@@ -43,7 +43,7 @@ src/main/java/online/robodoc/base/config/DataInitializer.java
 2. Edit the password setting:
 
 ```java
-admin.setPassword(passwordEncoder.encode("NewSecurePasswordHere"));
+admin.setPassword("NewSecurePasswordHere");
 ```
 
 3. Save and rebuild:
