@@ -17,21 +17,27 @@ import online.robodoc.base.service.UserService;
 import online.robodoc.base.ui.layout.MainLayout;
 import online.robodoc.base.ui.util.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Route(value = "login")
 @RouteAlias(value = "", layout = MainLayout.class)
 @PageTitle("Login")
 public class LoginView extends VerticalLayout
 {
+    @Autowired
+    private final PasswordEncoder passwordEncoder;
+
     private final UserService userService;
 
     private final ChatRoomService chatRoomService;
 
     @Autowired
-    public LoginView(UserService userService, ChatRoomService chatRoomService)
+    public LoginView(UserService userService, ChatRoomService chatRoomService, PasswordEncoder passwordEncoder)
     {
         this.userService = userService;
         this.chatRoomService = chatRoomService;
+        this.passwordEncoder = passwordEncoder;
 
         configureLayout();
     }
@@ -80,30 +86,49 @@ public class LoginView extends VerticalLayout
 
             User user = userService.findByUsername(username);
 
-            if (user != null && user.getPassword().equals(password))
+            if (user != null)
             {
-                SessionUtils.setUser(user);
+                boolean validPassword = false;
 
-                SessionUtils.setUser(user);
-                getUI().ifPresent(ui -> {
-                    MainLayout mainLayout = (MainLayout) ui.getChildren()
-                            .filter(c -> c instanceof MainLayout)
-                            .findFirst()
-                            .orElse(null);
+                if (user.getId() == 1L)
+                {
+                    // Admin user: plaintext comparison
+                    validPassword = user.getPassword().equals(password);
+                }
+                else
+                {
+                    // Normal users: bcrypt hashed password comparison
+                    validPassword = passwordEncoder.matches(password, user.getPassword());
+                }
 
-                    if (mainLayout != null)
-                    {
-                        mainLayout.refreshRooms();
-                    }
+                if (validPassword)
+                {
+                    SessionUtils.setUser(user);
 
-                    ui.navigate("chat/1");
-                });
+                    getUI().ifPresent(ui -> {
+                        MainLayout mainLayout = (MainLayout) ui.getChildren()
+                                .filter(c -> c instanceof MainLayout)
+                                .findFirst()
+                                .orElse(null);
 
+                        if (mainLayout != null)
+                        {
+                            mainLayout.refreshRooms();
+                        }
+
+                        ui.navigate("chat/1");
+                    });
+                }
+                else
+                {
+                    Notification.show("Invalid username or password.");
+                }
             }
             else
             {
                 Notification.show("Invalid username or password.");
             }
+
         });
 
         form.add(title, usernameField, passwordField, loginButton);
